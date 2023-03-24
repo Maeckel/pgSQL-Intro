@@ -147,8 +147,42 @@ Create or Replace Function nb_occurrences_3( caractere varchar(1) , chaine varch
 		END CASE;
 	END ;
 $$ LANGUAGE plpgsql ;
-		
 
+Create or Replace Function nb_clients_parVille( ville varchar(30) ) returns varchar(255) as $$
+	DECLARE
+		requete varchar(255);
+		resultat varchar(255);
+	BEGIN
+		requete = 'select distinct count(*) from client where adresse_client like ''' || '%' || ville || '''' ;
+		execute requete into resultat;
+		return resultat;
+	END ;
+$$ LANGUAGE plpgsql ;
+
+Create or Replace Function nb_clients_debiteurs() returns varchar(255) as $$
+	DECLARE
+		requete varchar(255);
+		resultat varchar(255);
+	BEGIN
+		requete = 'select count(distinct num_compte) from operation where type_operation like ''' || 'DEBIT' || '''' ;
+		execute requete into resultat;
+		return resultat;
+	END ;
+$$ LANGUAGE plpgsql ;
+
+Create or Replace Function new_client( nom_client varchar(30) , prenom_client varchar(30) , adresse_client varchar(50) , identifiant_internet varchar(10) , mdp_internet varchar(10) ) returns varchar(255) as $$
+	DECLARE
+		requete varchar(255);
+		resultat varchar(255);
+		id integer;
+	BEGIN
+		select into id max(num_client) from client;
+		requete = 'insert into client values(' || id + 1 || ',''' || nom_client || ''',''' || prenom_client || ''',''' || adresse_client || ''',''' || identifiant_internet || ''',''' || mdp_internet || ''')' ;
+		execute requete;
+		resultat = 'NOUVEAU CLIENT INSERER !';
+		return resultat;
+	END ;
+$$ LANGUAGE plpgsql ;
 
 		
 		
